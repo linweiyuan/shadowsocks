@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    database: mysql
+    show-sql: true
+  thymeleaf:
+    cache: false
