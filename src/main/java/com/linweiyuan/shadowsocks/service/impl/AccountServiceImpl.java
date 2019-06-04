@@ -1,5 +1,6 @@
 package com.linweiyuan.shadowsocks.service.impl;
 
+import com.linweiyuan.commons.model.ApiCode;
 import com.linweiyuan.commons.model.R;
 import com.linweiyuan.commons.util.JsonUtil;
 import com.linweiyuan.shadowsocks.common.Constant;
@@ -15,6 +16,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
@@ -53,5 +57,26 @@ public class AccountServiceImpl implements AccountService {
         Pageable pageable = PageRequest.of(page - 1, Constant.PAGE_SIZE, Sort.by("id"));
         Page<Account> p = accountRepository.findAll(pageable);
         return R.builder().data(p).build();
+    }
+
+    @Override
+    public R ping(int id) {
+        log.info("check account status -> " + id);
+        R.RBuilder builder = R.builder();
+        Socket socket = new Socket();
+        Account account = accountRepository.getOne(id);
+        if (account == null) {
+            builder = builder.code(ApiCode.ERR.getValue()).msg("账号不存在 -> " + id);
+        }
+        try {
+            socket.connect(new InetSocketAddress(account.getIp(), account.getPort()), Constant.PING_TIMEOUT);
+            account.setStatus(Constant.ACCOUNT_STATUS_ENABLE);
+            builder = builder.code(ApiCode.ERR.getValue()).msg("可用 -> " + account.getIp() + ":" + account.getPort());
+        } catch (IOException e) {
+            account.setStatus(Constant.ACCOUNT_STATUS_DISABLE);
+            builder = builder.code(ApiCode.ERR.getValue()).msg("被墙 -> " + account.getIp() + ":" + account.getPort());
+        }
+        accountRepository.save(account);
+        return builder.build();
     }
 }

@@ -5,6 +5,7 @@
     <title>Shadowsocks账号分享</title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
     <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script async src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 <nav>
@@ -52,9 +53,20 @@
         <td th:text="${account.password}"></td>
         <td th:text="${account.method}"></td>
         <td th:text="${account.location}"></td>
-        <td><a th:text="${account.status}" th:href="${account.config}"></a></td>
+        <td>
+            <a th:text="${account.status}" th:href="${account.config}"></a>
+            <a th:text="检测" th:href="'javascript:ping(' + ${account.id} + ');'"></a>
+        </td>
     </tr>
     </tbody>
 </table>
+<script>
+    function ping(id) {
+        $.get("/ping/" + id, function (e) {
+            alert(e.msg);
+            location.reload();
+        });
+    }
+</script>
 </body>
 </html>

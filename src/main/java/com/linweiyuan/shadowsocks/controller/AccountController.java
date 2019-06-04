@@ -34,4 +34,10 @@ public class AccountController {
         model.addAttribute("r", accountService.findByPage(page));
         return "shadowsocks";
     }
+
+    @ResponseBody
+    @GetMapping("/ping/{id}")
+    public R ping(@PathVariable int id) {
+        return accountService.ping(id);
+    }
 }

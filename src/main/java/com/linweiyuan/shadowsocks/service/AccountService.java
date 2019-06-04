@@ -6,4 +6,6 @@ public interface AccountService {
     R findAll();
 
     R findByPage(int page);
+
+    R ping(int id);
 }
