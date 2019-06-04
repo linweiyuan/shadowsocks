@@ -7,6 +7,10 @@ import com.linweiyuan.shadowsocks.entity.Account;
 import com.linweiyuan.shadowsocks.repository.AccountRepository;
 import com.linweiyuan.shadowsocks.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -38,5 +42,16 @@ public class AccountServiceImpl implements AccountService {
             ops.set(key, JsonUtil.toJson(accounts));
         }
         return R.builder().data(accounts).build();
+    }
+
+    @Override
+    public R findByPage(int page) {
+        if (page <= 0) {
+            page = 1;
+        }
+        log.info("get accounts by page -> " + page);
+        Pageable pageable = PageRequest.of(page - 1, Constant.PAGE_SIZE, Sort.by("id"));
+        Page<Account> p = accountRepository.findAll(pageable);
+        return R.builder().data(p).build();
     }
 }

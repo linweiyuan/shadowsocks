@@ -4,4 +4,6 @@ import com.linweiyuan.commons.model.R;
 
 public interface AccountService {
     R findAll();
+
+    R findByPage(int page);
 }
