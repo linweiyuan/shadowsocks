@@ -8,30 +8,40 @@
     <script async src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
+<nav class="navbar navbar-light bg-light">
+    <form class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+            <input id="param" name="param" class="form-control mr-sm-2" type="search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </div>
+        <input hidden name="page" th:value="${#request.getParameter('page')}">
+    </form>
+    <label>账号由爬虫自动获取不定期更新如果这样都要喝茶我也无F@K说</label>
+</nav>
 <nav>
     <ul class="pagination justify-content-center">
         <li th:class="${r.getData().number <= 0} ? 'page-item disabled' : 'page-item'">
             <a class="page-link"
-               th:href="@{/(page=${r.getData().number})}">上一页</a>
+               th:href="@{/(param=${#request.getParameter('param')}, page=${r.getData().number})}">上一页</a>
         </li>
 
         <li class="page-item"
             th:if="${r.getData().number > 0 and r.getData().number <= r.getData().totalPages}">
-            <a class="page-link" th:href="@{/(page=${r.getData().number})}"
+            <a class="page-link" th:href="@{/(param=${#request.getParameter('param')}, page=${r.getData().number})}"
                th:text="${r.getData().number}"></a>
         </li>
         <li class="page-item active" th:if="${r.getData().number + 1 <= r.getData().totalPages}">
-            <a class="page-link" th:href="@{/(page=${r.getData().number + 1})}"
+            <a class="page-link" th:href="@{/(param=${#request.getParameter('param')}, page=${r.getData().number + 1})}"
                th:text="${r.getData().number + 1}"></a>
         </li>
         <li class="page-item" th:if="${r.getData().number + 2 <= r.getData().totalPages}">
-            <a class="page-link" th:href="@{/(page=${r.getData().number + 2})}"
+            <a class="page-link" th:href="@{/(param=${#request.getParameter('param')}, page=${r.getData().number + 2})}"
                th:text="${r.getData().number + 2}"></a>
         </li>
 
         <li th:class="${r.getData().number >= r.getData().totalPages - 1} ? 'page-item disabled' : 'page-item'">
             <a class="page-link"
-               th:href="@{/(page=${r.getData().number + 2})}">下一页</a>
+               th:href="@{/(param=${#request.getParameter('param')}, page=${r.getData().number + 2})}">下一页</a>
         </li>
     </ul>
 </nav>

@@ -30,8 +30,8 @@ public class AccountController {
     }
 
     @GetMapping
-    public String index(Model model, @RequestParam(required = false, defaultValue = "1") int page) {
-        model.addAttribute("r", accountService.findByPage(page));
+    public String index(Model model, @RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false) String param) {
+        model.addAttribute("r", accountService.findByParam(page, param));
         return "shadowsocks";
     }
 

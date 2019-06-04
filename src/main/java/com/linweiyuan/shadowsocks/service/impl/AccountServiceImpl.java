@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -69,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
             builder = builder.code(ApiCode.ERR.getValue()).msg("账号不存在 -> " + id);
         }
         try {
-            socket.connect(new InetSocketAddress(account.getIp(), account.getPort()), Constant.PING_TIMEOUT);
+            socket.connect(new InetSocketAddress(account.getIp(), Integer.parseInt(account.getPort())), Constant.PING_TIMEOUT);
             account.setStatus(Constant.ACCOUNT_STATUS_ENABLE);
             builder = builder.code(ApiCode.ERR.getValue()).msg("可用 -> " + account.getIp() + ":" + account.getPort());
         } catch (IOException e) {
@@ -78,5 +79,20 @@ public class AccountServiceImpl implements AccountService {
         }
         accountRepository.save(account);
         return builder.build();
+    }
+
+    @Override
+    public R findByParam(int page, String param) {
+        log.info("get accounts by param -> " + param);
+        Pageable pageable = PageRequest.of(page - 1, Constant.PAGE_SIZE, Sort.by("id"));
+        Page<Account> p;
+        if (StringUtils.isEmpty(param)) {
+            p = accountRepository.findAll(pageable);
+        } else {
+            param += "%";
+            p = accountRepository.findByIpLikeOrPortLikeOrPasswordLikeOrMethodLikeOrLocationLikeOrConfigLikeOrStatusLike(
+                    param, param, param, param, param, param, param, pageable);
+        }
+        return R.builder().data(p).build();
     }
 }

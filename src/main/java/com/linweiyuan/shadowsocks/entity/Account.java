@@ -14,7 +14,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String ip;
-    private Integer port;
+    private String port;
     private String password;
     private String method;
     private String location;

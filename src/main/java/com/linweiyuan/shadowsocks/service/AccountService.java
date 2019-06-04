@@ -8,4 +8,6 @@ public interface AccountService {
     R findByPage(int page);
 
     R ping(int id);
+
+    R findByParam(int page, String param);
 }
