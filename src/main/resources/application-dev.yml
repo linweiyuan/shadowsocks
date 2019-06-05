@@ -4,8 +4,3 @@ spring:
     url: jdbc:mysql://mysql/shadowsocks?serverTimezone=Asia/Shanghai
     username: root
     password: toor
-  redis:
-    host: redis
-    port: 6379
-    password: toor
-    database: 0

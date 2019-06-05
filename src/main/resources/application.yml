@@ -6,3 +6,5 @@ spring:
     show-sql: true
   thymeleaf:
     cache: false
+  jackson:
+    default-property-inclusion: non_null

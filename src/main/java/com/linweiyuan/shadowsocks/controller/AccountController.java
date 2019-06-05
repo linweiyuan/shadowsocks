@@ -3,7 +3,6 @@ package com.linweiyuan.shadowsocks.controller;
 import com.linweiyuan.commons.model.R;
 import com.linweiyuan.shadowsocks.service.AccountService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,25 +18,18 @@ public class AccountController {
 
     @ResponseBody
     @GetMapping("/accounts")
-    public R accounts() {
-        return accountService.findAll();
-    }
-
-    @ResponseBody
-    @GetMapping("/accounts/{page}")
-    public R page(@PathVariable int page) {
-        return accountService.findByPage(page);
-    }
-
-    @GetMapping
-    public String index(Model model, @RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false) String param) {
-        model.addAttribute("r", accountService.findByParam(page, param));
-        return "shadowsocks";
+    public R accounts(@RequestParam int page, @RequestParam int limit, @RequestParam(defaultValue = "") String keyword) {
+        return accountService.findAccounts(page, limit, keyword);
     }
 
     @ResponseBody
     @GetMapping("/ping/{id}")
     public R ping(@PathVariable int id) {
         return accountService.ping(id);
+    }
+
+    @GetMapping("/")
+    public String index() {
+        return "page/index.html";
     }
 }

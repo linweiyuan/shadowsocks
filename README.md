@@ -4,22 +4,13 @@
 GET /
 ```
 ---
-### 获取全部账号
+### 网络检测
 ```java
-GET /accounts
+GET /ping/{账号ID}
 ```
 ---
 ### 分页查询
 ```java
-GET /accounts/{page}
-```
----
-### 网络检测
-```java
-GET /ping/{id}
-```
----
-### 模糊查询
-```java
-GET /？param=查询内容&page=页数
+GET /？page={页数}&limit={每页数量}
+GET /？page={页数}&limit={每页数量}&keyword={模糊查询关键字}
 ```
