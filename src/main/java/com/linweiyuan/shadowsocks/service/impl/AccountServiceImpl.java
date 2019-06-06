@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
         if (account == null) {
             builder = builder.code(ApiCode.ERR.getValue()).msg("账号不存在 -> " + id);
         }
-        try {
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(account.getIp(), Integer.parseInt(account.getPort())), Constant.PING_TIMEOUT);
             account.setStatus(Constant.ACCOUNT_STATUS_ENABLE);
             builder = builder.code(ApiCode.OK.getValue()).msg("可用 -> " + account.getIp() + ":" + account.getPort());
