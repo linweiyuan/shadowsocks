@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
+
 @Controller
 public class AccountController {
     private final AccountService accountService;
@@ -31,5 +33,11 @@ public class AccountController {
     @GetMapping("/")
     public String index() {
         return "page/index.html";
+    }
+
+    @ResponseBody
+    @GetMapping("/sync/{jsessionid}")
+    public R sync(@PathVariable String jsessionid) throws IOException {
+        return accountService.sync(jsessionid);
     }
 }

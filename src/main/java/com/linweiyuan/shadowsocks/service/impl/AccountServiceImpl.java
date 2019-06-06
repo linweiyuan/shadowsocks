@@ -1,7 +1,10 @@
 package com.linweiyuan.shadowsocks.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.linweiyuan.commons.model.ApiCode;
 import com.linweiyuan.commons.model.R;
+import com.linweiyuan.commons.util.HttpUtil;
+import com.linweiyuan.commons.util.JsonUtil;
 import com.linweiyuan.shadowsocks.common.Constant;
 import com.linweiyuan.shadowsocks.entity.Account;
 import com.linweiyuan.shadowsocks.repository.AccountRepository;
@@ -17,8 +20,10 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "unchecked"})
 @Slf4j
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -32,7 +37,6 @@ public class AccountServiceImpl implements AccountService {
     public R ping(int id) {
         log.info("check account status -> " + id);
         R.RBuilder builder = R.builder();
-        Socket socket = new Socket();
         Account account = accountRepository.getOne(id);
         if (account == null) {
             builder = builder.code(ApiCode.ERR.getValue()).msg("账号不存在 -> " + id);
@@ -62,5 +66,52 @@ public class AccountServiceImpl implements AccountService {
                     keyword, keyword, keyword, keyword, keyword, keyword, keyword, pageable);
         }
         return R.builder().data(p.getContent()).count(p.getTotalElements()).build();
+    }
+
+    @Override
+    public R sync(String jsessionid) throws IOException {
+        log.info("sync new accounts -> " + jsessionid);
+        String json = HttpUtil.connect(Constant.API_SSR_TOOL)
+                .proxy(Constant.HTTP_PROXY_SERVER, Constant.HTTP_PROXY_PORT)
+                .cookie("JSESSIONID", jsessionid)
+                .get()
+                .text();
+        if (json.equals("{}")) {
+            return R.builder().msg("同步失败，jsessionid失效").build();
+        }
+
+        List<Account> latestAccounts = new ArrayList<>();
+        JsonUtil.toObject(json, JSONObject.class)
+                .getJSONArray("data")
+                .forEach(array -> {
+                    JSONObject obj = (JSONObject) array;
+                    Account account = Account.builder()
+                            .ip(obj.getString("server"))
+                            .port(String.valueOf(obj.getIntValue("server_port")))
+                            .password(obj.getString("password"))
+                            .method(obj.getString("method"))
+                            .location(obj.getString("country"))
+                            .config(obj.getString("sslink").replace("SSRTOOL_Node%3A", ""))
+                            .status(obj.getBooleanValue("m_station_cn_status") ? Constant.ACCOUNT_STATUS_ENABLE : Constant.ACCOUNT_STATUS_DISABLE)
+                            .build();
+                    latestAccounts.add(account);
+                });
+
+        List<Account> newAccounts = new ArrayList<>();
+        List<Account> dbAccounts = accountRepository.findAll();
+        for (Account latestAccount : latestAccounts) {
+            boolean exists = false;
+            for (Account dbAccount : dbAccounts) {
+                if (dbAccount.getConfig().equals(latestAccount.getConfig())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                newAccounts.add(latestAccount);
+            }
+        }
+        accountRepository.saveAll(newAccounts);
+        return R.builder().msg("同步完成，新增" + newAccounts.size() + "个账号").build();
     }
 }
