@@ -15,8 +15,7 @@
 
         label {
             font-size: 20px;
-            float: right;
-            margin: 10px;;
+            margin: 10px;
         }
     </style>
 </head>
@@ -27,22 +26,14 @@
         <input class="layui-input" name="id" id="keyword">
     </div>
     <button class="layui-btn" data-type="reload" id="btnSearch">搜索</button>
+</div>
+
+<div>
     <label>账号状态“可用”仅代表墙内能ping通，具体能不能用自己测</label>
 </div>
-<table class="layui-table" lay-data="{id:'table', page:true, limit:10, url:'/accounts'}" lay-filter="table">
-    <thead>
-    <tr>
-        <th lay-data="{field:'id', width:80, sort:true}">ID</th>
-        <th lay-data="{field:'ip', width:180, sort:true}">IP</th>
-        <th lay-data="{field:'port', width:80, sort:true}">端口</th>
-        <th lay-data="{field:'password', width:180,sort: true}">密码</th>
-        <th lay-data="{field:'method', width:120, sort:true}">加密方式</th>
-        <th lay-data="{field:'location', width:250, sort:true}">位置</th>
-        <th lay-data="{field:'config', sort:true}">配置</th>
-        <th lay-data="{field:'status', width:180, sort:true, templet:'#statusTpl'}">状态</th>
-    </tr>
-    </thead>
-</table>
+
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
 <script type="text/html" id="statusTpl">
     <input disabled type="checkbox" id="status" value="{{d.status}}" lay-skin="switch" lay-text="可用|被墙"
            lay-filter="statusFilter" {{ d.status=='可用'?'checked':'' }}>
@@ -54,6 +45,22 @@
     layui.use('table', function () {
         var table = layui.table;
         var form = layui.form;
+
+        table.render({
+            elem: '#table'
+            , url: '/accounts'
+            , cols: [[
+                {title: 'ID', field: 'id', width: 80, sort: true}
+                , {title: 'IP', field: 'ip', width: 180, sort: true}
+                , {title: '端口', field: 'port', width: 80, sort: true}
+                , {title: '密码', field: 'password', width: 180, sort: true}
+                , {title: '加密方式', field: 'method', width: 120, sort: true}
+                , {title: '位置', field: 'location', width: 250, sort: true}
+                , {title: '配置', field: 'config', sort: true}
+                , {title: '状态', field: 'status', width: 180, sort: true, templet: '#statusTpl'}
+            ]]
+            , page: true
+        });
 
         table.on('tool(table)', function (obj) {
             var data = obj.data;
