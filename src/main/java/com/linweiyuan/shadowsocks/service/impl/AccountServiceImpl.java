@@ -52,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public R findAccounts(int page, int limit, String keyword) {
         log.info("get accounts by keyword -> " + keyword);
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("id"));
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("id").descending());
         Page<Account> p;
         if (StringUtils.isEmpty(keyword)) {
             p = accountRepository.findAll(pageable);
