@@ -29,7 +29,7 @@
 </div>
 
 <div>
-    <label>账号状态“可用”仅代表墙内能ping通，具体能不能用自己测</label>
+    <label>账号状态“可用”仅代表墙内能ping通，具体能不能用自己测（点击ID可直接下载配置文件）</label>
 </div>
 
 <table class="layui-hide" id="table" lay-filter="table"></table>
@@ -50,7 +50,7 @@
             elem: '#table'
             , url: '/accounts'
             , cols: [[
-                {title: 'ID', field: 'id', width: 80, sort: true}
+                {title: 'ID', field: 'id', width: 80, sort: true, event: 'download'}
                 , {title: 'IP', field: 'ip', width: 180, sort: true}
                 , {title: '端口', field: 'port', width: 80, sort: true}
                 , {title: '密码', field: 'password', width: 180, sort: true}
@@ -73,6 +73,8 @@
                     var msg = '【' + data.ip + ":" + data.port + '】';
                     layer.msg(r.code === 0 ? msg + " 连接正常" : msg + ' 连接超时');
                 });
+            } else if (obj.event === 'download') {
+                window.location = "/download/" + obj.data.id;
             }
         });
 

@@ -14,3 +14,8 @@ GET /ping/{账号ID}
 GET /？page={页数}&limit={每页数量}
 GET /？page={页数}&limit={每页数量}&keyword={模糊查询关键字}
 ```
+---
+### 配置文件下载
+```java
+GET /download/{账号ID}
+```

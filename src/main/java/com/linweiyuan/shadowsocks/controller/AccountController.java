@@ -2,6 +2,7 @@ package com.linweiyuan.shadowsocks.controller;
 
 import com.linweiyuan.commons.model.R;
 import com.linweiyuan.shadowsocks.service.AccountService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,5 +40,10 @@ public class AccountController {
     @GetMapping("/sync/{jsessionid}")
     public R sync(@PathVariable String jsessionid) throws IOException {
         return accountService.sync(jsessionid);
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity download(@PathVariable int id) throws IOException {
+        return (ResponseEntity) accountService.download(id).getData();
     }
 }

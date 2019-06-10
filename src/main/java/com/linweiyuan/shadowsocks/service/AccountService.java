@@ -10,4 +10,6 @@ public interface AccountService {
     R findAccounts(int page, int limit, String keyword);
 
     R sync(String jsessionid) throws IOException;
+
+    R download(int id) throws IOException;
 }

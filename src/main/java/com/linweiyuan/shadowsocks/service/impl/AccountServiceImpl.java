@@ -1,6 +1,8 @@
 package com.linweiyuan.shadowsocks.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.linweiyuan.commons.model.ApiCode;
 import com.linweiyuan.commons.model.R;
 import com.linweiyuan.commons.util.HttpUtil;
@@ -14,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +28,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"ConstantConditions", "unchecked"})
+@SuppressWarnings({"ConstantConditions"})
 @Slf4j
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -113,5 +118,27 @@ public class AccountServiceImpl implements AccountService {
         }
         accountRepository.saveAll(newAccounts);
         return R.builder().msg("同步完成，新增" + newAccounts.size() + "个账号").build();
+    }
+
+    @Override
+    public R download(int id) throws IOException {
+        log.info("download config -> " + id);
+        Account account = accountRepository.getOne(id);
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode root = mapper.createObjectNode();
+        root.put("server", account.getIp());
+        root.put("server_port", account.getPort());
+        root.put("password", account.getPassword());
+        root.put("method", account.getMethod());
+        root.put("local_address", "127.0.0.1");
+        root.put("local_port", 1080);
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+
+        ResponseEntity entity = ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".json")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(json);
+        return R.builder().data(entity).build();
     }
 }
