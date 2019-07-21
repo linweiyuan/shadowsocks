@@ -1,6 +1,6 @@
 package com.linweiyuan.shadowsocks.controller;
 
-import com.linweiyuan.commons.model.R;
+import com.linweiyuan.commons.model.X;
 import com.linweiyuan.shadowsocks.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,13 +21,13 @@ public class AccountController {
 
     @ResponseBody
     @GetMapping("/accounts")
-    public R accounts(@RequestParam int page, @RequestParam int limit, @RequestParam(defaultValue = "") String keyword) {
+    public X accounts(@RequestParam int page, @RequestParam int limit, @RequestParam(defaultValue = "") String keyword) {
         return accountService.findAccounts(page, limit, keyword);
     }
 
     @ResponseBody
     @GetMapping("/ping/{id}")
-    public R ping(@PathVariable int id) {
+    public X ping(@PathVariable int id) {
         return accountService.ping(id);
     }
 
@@ -38,7 +38,7 @@ public class AccountController {
 
     @ResponseBody
     @GetMapping("/sync/{jsessionid}")
-    public R sync(@PathVariable String jsessionid) throws IOException {
+    public X sync(@PathVariable String jsessionid) throws IOException {
         return accountService.sync(jsessionid);
     }
 

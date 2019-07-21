@@ -6,17 +6,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.5.RELEASE</version>
+        <version>2.1.6.RELEASE</version>
         <relativePath/>
     </parent>
 
     <groupId>com.linweiyuan</groupId>
     <artifactId>shadowsocks</artifactId>
-    <version>latest</version>
+    <version>0.1.0</version>
 
     <properties>
         <java.version>1.8</java.version>
-        <commons.version>latest</commons.version>
+        <commons.version>0.1.0</commons.version>
     </properties>
 
     <dependencies>

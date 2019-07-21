@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.linweiyuan.commons.model.ApiCode;
-import com.linweiyuan.commons.model.R;
+import com.linweiyuan.commons.model.X;
 import com.linweiyuan.commons.util.HttpUtil;
 import com.linweiyuan.commons.util.JsonUtil;
 import com.linweiyuan.shadowsocks.common.Constant;
@@ -39,9 +39,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public R ping(int id) {
+    public X ping(int id) {
         log.info("check account status -> " + id);
-        R.RBuilder builder = R.builder();
+        X.XBuilder builder = X.builder();
         Account account = accountRepository.getOne(id);
         if (account == null) {
             builder = builder.code(ApiCode.ERR.getValue()).msg("账号不存在 -> " + id);
@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public R findAccounts(int page, int limit, String keyword) {
+    public X findAccounts(int page, int limit, String keyword) {
         log.info("get accounts by keyword -> " + keyword);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("id").descending());
         Page<Account> p;
@@ -70,11 +70,11 @@ public class AccountServiceImpl implements AccountService {
             p = accountRepository.findByIpLikeOrPortLikeOrPasswordLikeOrMethodLikeOrLocationLikeOrConfigLikeOrStatusLike(
                     keyword, keyword, keyword, keyword, keyword, keyword, keyword, pageable);
         }
-        return R.builder().data(p.getContent()).count(p.getTotalElements()).build();
+        return X.builder().data(p.getContent()).count(p.getTotalElements()).build();
     }
 
     @Override
-    public R sync(String jsessionid) throws IOException {
+    public X sync(String jsessionid) throws IOException {
         log.info("sync new accounts -> " + jsessionid);
         String json = HttpUtil.connect(Constant.API_SSR_TOOL)
                 .proxy(Constant.HTTP_PROXY_SERVER, Constant.HTTP_PROXY_PORT)
@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
                 .get()
                 .text();
         if (json.equals("{}")) {
-            return R.builder().msg("同步失败，jsessionid失效").build();
+            return X.builder().msg("同步失败，jsessionid失效").build();
         }
 
         List<Account> latestAccounts = new ArrayList<>();
@@ -117,11 +117,11 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         accountRepository.saveAll(newAccounts);
-        return R.builder().msg("同步完成，新增" + newAccounts.size() + "个账号").build();
+        return X.builder().msg("同步完成，新增" + newAccounts.size() + "个账号").build();
     }
 
     @Override
-    public R download(int id) throws IOException {
+    public X download(int id) throws IOException {
         log.info("download config -> " + id);
         Account account = accountRepository.getOne(id);
 
@@ -139,6 +139,6 @@ public class AccountServiceImpl implements AccountService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".json")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(json);
-        return R.builder().data(entity).build();
+        return X.builder().data(entity).build();
     }
 }

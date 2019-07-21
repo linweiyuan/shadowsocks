@@ -1,15 +1,15 @@
 package com.linweiyuan.shadowsocks.service;
 
-import com.linweiyuan.commons.model.R;
+import com.linweiyuan.commons.model.X;
 
 import java.io.IOException;
 
 public interface AccountService {
-    R ping(int id);
+    X ping(int id);
 
-    R findAccounts(int page, int limit, String keyword);
+    X findAccounts(int page, int limit, String keyword);
 
-    R sync(String jsessionid) throws IOException;
+    X sync(String jsessionid) throws IOException;
 
-    R download(int id) throws IOException;
+    X download(int id) throws IOException;
 }
